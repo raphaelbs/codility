@@ -40,8 +40,8 @@ public class GenomicRangeQuery {
 }
 
 class Map {
-	private final ArrayList<Integer> AMap, CMap, GMap, TMap;
-	private final TreeManager ATree, CTree, GTree, TTree;
+	private final ArrayList<Integer> AMap, CMap, GMap;
+	private final TreeManager ATree, CTree, GTree;
 	private final String S;
 	private final int sLen;
 	private final int[] translatedArr;
@@ -53,12 +53,10 @@ class Map {
 		AMap = new ArrayList<Integer>(sLen);
 		CMap = new ArrayList<Integer>(sLen);
 		GMap = new ArrayList<Integer>(sLen);
-		TMap = new ArrayList<Integer>(sLen);
 		populateMaps();
-		ATree = new TreeManager(AMap, translatedArr);
-		CTree = new TreeManager(CMap, translatedArr);
-		GTree = new TreeManager(GMap, translatedArr);
-		TTree = new TreeManager(TMap, translatedArr);
+		ATree = new TreeManager(AMap);
+		CTree = new TreeManager(CMap);
+		GTree = new TreeManager(GMap);
 	}
 	
 	private void populateMaps() {
@@ -77,7 +75,6 @@ class Map {
 				translatedArr[i] = 3;
 				continue it;
 			case 'T':
-				TMap.add(i);
 				translatedArr[i] = 4;
 				continue it;
 			}
@@ -85,27 +82,21 @@ class Map {
 		AMap.trimToSize();
 		CMap.trimToSize();
 		GMap.trimToSize();
-		TMap.trimToSize();
 	}
 
 	public int getMinimunAt(final int P, final int Q) {
-		if (Q - P == 0) return translatedArr[P];
-		if (Q - P == 1) return Math.min(translatedArr[P], translatedArr[Q]);
 		if (ATree.containAnyBetween(P, Q)) return 1;
 		if (CTree.containAnyBetween(P, Q)) return 2;
 		if (GTree.containAnyBetween(P, Q)) return 3;
-		if (TTree.containAnyBetween(P, Q)) return 4;
-		return -1;
+		return 4;
 	}
 }
 
 class TreeManager { 
     private Node root;
-    private final int[] translatedArray;
     
-    public TreeManager(final ArrayList<Integer> list, final int[] translatedArray) {
+    public TreeManager(final ArrayList<Integer> list) {
     	root = listToBST(list, 0, list.size() - 1);
-    	this.translatedArray = translatedArray;
     }
     
     private Node listToBST(final ArrayList<Integer> list, final int start, final int end) {
@@ -127,10 +118,10 @@ class TreeManager {
     
     private boolean containAny(final Node currentNode, final int P, final int Q) {
     	if (currentNode == null) return false;
-    	if (currentNode.data == translatedArray[P] || currentNode.data == translatedArray[Q]) return true;
-    	if (currentNode.data > translatedArray[P] && currentNode.data < translatedArray[Q]) return true;
-    	if (currentNode.data > translatedArray[Q]) return containAny(currentNode.right, P, Q);
-    	if (currentNode.data < translatedArray[P]) return containAny(currentNode.left, P, Q);
+    	if (currentNode.data == P || currentNode.data == Q) return true;
+    	if (currentNode.data > P && currentNode.data < Q) return true;
+    	if (currentNode.data > Q) return containAny(currentNode.right, P, Q);
+    	if (currentNode.data < P) return containAny(currentNode.left, P, Q);
     	return false;
     }
 }
