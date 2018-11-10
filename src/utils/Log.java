@@ -1,10 +1,17 @@
 package utils;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Array;
 
 public abstract class Log {
 	
 	public static void run(IExecuter executner) {
+		run(executner, 100);
+	}
+	
+	public static void run(IExecuter executner, int average) {
 		long t = System.currentTimeMillis();
 		Object execution = executner.execute();
 		if (execution.getClass().isArray()) {
@@ -19,6 +26,21 @@ public abstract class Log {
 			System.out.println("Resposta: " + execution);
 		}
         System.out.println("Tempo: " + (System.currentTimeMillis() - t) + "ms");
+        
+        System.out.println("\nExecutando média...");
+        System.setOut(new PrintStream(new OutputStream() {
+			@Override
+			public void write(int arg0) throws IOException {
+			}
+		}));
+        
+        double avg = 0;
+        for (int i=0; i<average; i++) {
+        	t = System.currentTimeMillis();
+        	executner.execute();
+        	avg += System.currentTimeMillis() - t;
+        }
+        System.err.println("Tempo: " + (avg/average) + "ms");
 	}
 
 }
