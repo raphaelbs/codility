@@ -28,6 +28,7 @@ public abstract class Log {
         System.out.println("Tempo: " + (System.currentTimeMillis() - t) + "ms");
         
         System.out.println("\nExecutando média...");
+        PrintStream printStreamOriginal = System.out;
         System.setOut(new PrintStream(new OutputStream() {
 			@Override
 			public void write(int arg0) throws IOException {
@@ -40,7 +41,8 @@ public abstract class Log {
         	executner.execute();
         	avg += System.currentTimeMillis() - t;
         }
-        System.err.println("Tempo: " + (avg/average) + "ms");
+        System.setOut(printStreamOriginal);
+        System.out.println("Tempo: " + (avg/average) + "ms");
 	}
 
 }
